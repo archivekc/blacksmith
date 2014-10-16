@@ -1,0 +1,56 @@
+/*
+Fix for dropdown in inverse theme when in collapsable navbar :
+https://github.com/twbs/bootstrap/issues/9588
+*/
+.inverse-dropdown {
+	background-color: #222;
+	border-color: #080808;
+}
+
+.inverse-dropdown > li > a {
+	color: #999;
+}
+
+.inverse-dropdown > li:hover {
+	color: #fff;
+	background-color: #000;
+}
+
+.inverse-dropdown > .divider {
+	background-color: #000;
+}
+
+/*
+Custom
+*/
+
+/* Set header wrapped in link to their right color */
+.list-group-item-danger a {
+	color: #a94442;
+}
+
+.list-group-item-warning a {
+	color: #8a6d3b;
+}
+
+.list-group-item-success a {
+	color: #3c763d;
+}
+
+.list-group-item-default {
+	background-color: #e0e0e0;
+}
+
+.list-group-item-default a {
+	color: #777;
+}
+
+.list-group-item-default .progress-bar-default  {
+	background-color: #777;
+	background-image: linear-gradient(to bottom,#888 0,#777 100%);
+}
+
+/* Remove the unnecessary scroll bar in the modal overlay */
+.modal {
+	overflow-y:auto;
+}

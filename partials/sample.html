@@ -1,0 +1,61 @@
+<div  class="navbar navbar-inverse navbar-static-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+				
+			<button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Blacksmith</a>
+		</div>
+		
+		<div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="{{forgeUrl}}/jenkins/">Jenkins</a></li>
+				<li><a href="{{forgeUrl}}/sonar/">Sonar</a></li>
+				<li><a href="{{forgeUrl}}/wiki/">Wiki</a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
+					<ul class="dropdown-menu inverse-dropdown">
+						<li><a href="#">Gollum</a></li>
+						<li class="divider"></li>
+						<li><a href="#">Git List</a></li>
+						<li><a href="#">Git Web</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-4">
+			<sonar groupname="Sonar">
+				<sonar-project ng-repeat="project in projects | sonar" key="{{project.key}}" displayname="{{project.displayname}}" />
+			</sonar>
+		</div>
+		<div class="col-md-4">
+			<jenkins groupname="Monitoring">
+				<jenkins-project ng-repeat="project in projects | jenkins:'Monitoring'" fullname="{{project.fullname}}" displayname="{{project.displayname}}" />
+			</jenkins>
+		</div>
+		<div class="col-md-4">
+			<jenkins groupname="Build">
+				<jenkins-project ng-repeat="project in projects | jenkins:'Build'" fullname="{{project.fullname}}" displayname="{{project.displayname}}" />
+			</jenkins>
+		</div>
+	</div>
+</div>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<jenkins groupname="Cucumber">
+				<jenkins-project ng-repeat="project in projects | jenkins:'Cucumber MLP'" fullname="{{project.fullname}}" displayname="{{project.displayname}}" />
+			</jenkins>
+		</div>
+	</div>
+</div>
