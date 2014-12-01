@@ -2,19 +2,24 @@ var BlacksmithServices = angular.module('BlacksmithServices');
 
 BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker, jenkinsUrl, jenkinsHeaders) {
 	var jenkinsCache = $cacheFactory('jenkins');
-	
+
 	ticker.register(function () {
 			jenkinsCache.removeAll();
 		});
-	
+
 	return {
 		getLastCompletedBuild: function (jobName) {
 			var deferred = $q.defer();
+
+			var reportRequest,
+					updateDateRequest;
+
 			var project;
 			project = {};
 			project.name = jobName;
-			
-			$http({
+			project.url = jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/testReport/';
+
+			reportRequest = $http({
 					method: 'GET',
 					url: jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/testReport/api/json',
 					headers: jenkinsHeaders,
@@ -39,7 +44,7 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 						count: project.tests.total.count - project.tests.failed.count - project.tests.skipped.count,
 						list: []
 					};
-					
+
 					angular.forEach(data.childReports, function(report) {
 						angular.forEach(report.result.suites, function(suite) {
 							angular.forEach(suite.cases, function(cas) {
@@ -58,8 +63,6 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 							})
 						})
 					});
-					
-					deferred.resolve(project);
 				})
 				.error(function() {
 					project.tests = {
@@ -80,14 +83,31 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 								list: []
 							}
 					};
-					deferred.resolve(project);
 				});
-				
+
+
+
+			updateDateRequest = $http({
+					method: 'GET',
+					url: jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/api/json',
+					headers: jenkinsHeaders,
+					withCredentials: true,
+					cache: jenkinsCache
+				}).success(function(data) {
+					project.timestamp = data.timestamp;
+				});
+
+
+			$q.all([reportRequest, updateDateRequest])
+				.then(function () {
+					deferred.resolve(project)
+				});
+
 			return deferred.promise;
 		},
 		getLastCompletedBuildURL: function (jobName) {
 			var deferred = $q.defer();
-			deferred.resolve(jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/testReport/');
+			deferred.resolve();
 			return deferred.promise;
 		}
 	}

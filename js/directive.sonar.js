@@ -12,19 +12,22 @@ BlacksmithDirectives.directive(
 			transclude: true,
 			controller: function($scope) {
 				$scope.projects = [];
-				
+
 				this.addProject = function (project) {
 					$scope.projects.push(project);
 				};
 			},
-			template: '<div class="panel panel-default">' + 
+			template: '<div class="panel panel-default">' +
 					'<div class="panel-heading">' +
 						'<h1 class="panel-title">Sonar</h1>' +
 					'</div>' +
 					'<table class="table">' +
 						'<tr>' +
 							'<td></td>' +
-							'<th style="text-align: center" ng-repeat="project in projects">{{project.name}}</th>' +
+							'<th style="text-align: center" ng-repeat="project in projects">' +
+								'<a href="{{project.url}}">{{project.name}}</a><br />' +
+								'<span class="label label-default">{{project.timestamp | fromNow}}</span>' +
+							'</th>' +
 						'</tr>' +
 						'<tr>' +
 							'<th><span class="glyphicon glyphicon-warning-sign" style="color: red;"></span> Blockers</th>' +
@@ -97,7 +100,7 @@ BlacksmithDirectives.directive(
 			},
 			controller: function($scope, $element, ticker, sonar) {
 				$scope.project = {};
-				
+
 				var refreshProject = function () {
 					sonar
 						.getViolations($scope.key)
@@ -106,7 +109,7 @@ BlacksmithDirectives.directive(
 							angular.extend($scope.project, value);
 						});
 				};
-				
+
 				ticker.register(function() { refreshProject(); });
 
 				refreshProject();

@@ -52,13 +52,13 @@ BlacksmithDirectives.directive(
 					'<div class="modal-footer">' +
 						'<button class="btn btn-primary" ng-click="$close();">Close</button>' +
 					'</div>';
-				
+
 				$scope.open = function() {
 						$modal.open({
 								template: modalTemplate,
 								scope: $scope,
 								controller: function ($scope, $modalInstance) {
-									
+
 									$scope.changePage = function () {
 										var tests = $scope.tests[this.value].list.slice((this.currentPage - 1) * $scope.itemsPerPage, this.currentPage * $scope.itemsPerPage);
 										var displayedTests;
@@ -73,7 +73,7 @@ BlacksmithDirectives.directive(
 										}
 										this.displayedTests = displayedTests;
 									};
-									
+
 									$scope.itemsPerPage = 7;
 									$scope.statuses = [
 										{
@@ -104,11 +104,11 @@ BlacksmithDirectives.directive(
 											changePage: $scope.changePage
 										}
 									];
-									
+
 									for(var i in $scope.statuses) {
 										$scope.statuses[i].changePage(1);
 									}
-								
+
 									$scope.setActive = function(status) {
 										$scope.active = status;
 									};
@@ -159,7 +159,7 @@ BlacksmithDirectives.directive(
 							labelglyph: "glyphicon-ok-sign"
 						}
 					};
-				
+
 				var refreshProject = function () {
 					jenkins
 						.getLastCompletedBuild($scope.fullname)
@@ -173,17 +173,11 @@ BlacksmithDirectives.directive(
 							} else {
 								value.status = statuses.UNDEFINED;
 							}
-							
+
 							angular.extend($scope, value);
 						});
-					
-					jenkins
-						.getLastCompletedBuildURL($scope.fullname)
-						.then(function(value) {
-							$scope.url = value;
-						});
 				};
-				
+
 				ticker.register(function() { refreshProject(); });
 
 				refreshProject();
@@ -194,14 +188,14 @@ BlacksmithDirectives.directive(
 						'<jenkins-report-icon></jenkins-report-icon>' +
 					'</div>' +
 					'<h4 class="list-group-item-heading">' +
-						'<a href="{{url}}">{{displayname}}</a>' +
+						'<a href="{{url}}">{{displayname}}</a> <small>{{timestamp | fromNow}}</small>' +
 					'</h4>' +
 					'<div style="clear: both" class="list-group-item-text" tooltip="{{tests.failed.count}} / {{tests.skipped.count}} / {{tests.success.count}}">' +
 						'<progress max="100">' +
 							'<bar type="danger" value="tests.failed.count * 100 / tests.total.count"><span ng-hide="(tests.failed.count / tests.total.count) < 0.05">{{tests.failed.count}}</span></bar>' +
 							'<bar type="warning" value="tests.skipped.count * 100 / tests.total.count"><span ng-hide="(tests.skipped.count / tests.total.count) < 0.05">{{tests.skipped.count}}</span></bar>' +
 							'<bar type="success" value="100 - (tests.skipped.count * 100 / tests.total.count).toFixed(2) - (tests.failed.count * 100 / tests.total.count).toFixed(2)"><span ng-hide="(tests.success.count / tests.total.count) < 0.05">{{tests.success.count}}</span></bar>' +
-							
+
 							'<bar type="default" ng-if="tests.total.count == 0" value="100">No test results</bar>' +
 						'</progress>' +
 					'</div>' +
