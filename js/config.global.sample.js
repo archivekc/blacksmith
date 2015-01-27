@@ -8,6 +8,7 @@ BlacksmithApp.constant('sonarUrl', 'http://<forge_url>/sonar/');
 BlacksmithApp.constant('sonarHeaders', {});
 BlacksmithApp.constant('refreshDelay', 60000);
 BlacksmithApp.constant('carouselInterval', 30000);
+BlacksmithApp.constant('iconFlavor', 'glyphicon');
 
 BlacksmithApp.constant('projectType', {
 		"SONAR": "sonar",

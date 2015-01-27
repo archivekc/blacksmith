@@ -1,20 +1,18 @@
 var BlacksmithFilters = angular.module('BlacksmithFilters');
 
-
-
 BlacksmithFilters.filter('projects', function() {
 	function filter(projects, arg) {
 		var i, j;
 		var isOK;
 		var out = [];
 		var filter;
-		
+
 		if(arg !== null && typeof arg === 'object') {
 			filter = arg;
 		} else {
 			filter = {};
 		}
-		
+
 		for(i in projects) {
 			isOK = true;
 			for(j in filter) {
@@ -27,7 +25,7 @@ BlacksmithFilters.filter('projects', function() {
 				out.push(projects[i]);
 			}
 		}
-		
+
 		return out;
 	};
 

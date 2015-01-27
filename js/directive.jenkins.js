@@ -119,7 +119,7 @@ BlacksmithDirectives.directive(
 							});
 					};
 			},
-			template: '<button type="button" class="btn {{status.buttonstyle}} btn-xs" ng-click="open()"><span class="glyphicon {{status.labelglyph}}"></span></button>'
+			template: '<button type="button" class="btn {{status.buttonstyle}} btn-xs" ng-click="open()"><icon zgeg="{{status.id}}" /></button>'
 		};
 	}
 );
@@ -139,24 +139,24 @@ BlacksmithDirectives.directive(
 			controller: function($scope, $element, ticker, jenkins) {
 				var statuses = {
 						UNDEFINED: {
+							id: "undefined",
 							liststyle: "list-group-item-default",
-							buttonstyle: "label-default",
-							labelglyph: "glyphicon-question-sign"
+							buttonstyle: "label-default"
 						},
 						FAILED: {
+							id: "failure",
 							liststyle: "list-group-item-danger",
-							buttonstyle: "label-danger",
-							labelglyph: "glyphicon-exclamation-sign"
+							buttonstyle: "label-danger"
 						},
 						HASSKIPPED: {
+							id: "warning",
 							liststyle: "list-group-item-warning",
-							buttonstyle: "label-warning",
-							labelglyph: "glyphicon-warning-sign"
+							buttonstyle: "label-warning"
 						},
 						SUCCESS: {
+							id: "success",
 							liststyle: "list-group-item-success",
-							buttonstyle: "label-success",
-							labelglyph: "glyphicon-ok-sign"
+							buttonstyle: "label-success"
 						}
 					};
 
