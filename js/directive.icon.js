@@ -6,9 +6,9 @@ BlacksmithDirectives.directive(
 		return {
 			restrict: 'E',
 			scope: {
-				zgeg: '@'
+				type: '@'
 			},
-			replace: false,
+			replace: true,
 			transclude: false,
 			controller: function($scope, iconFlavor) {
 				var flavors = {
@@ -26,8 +26,8 @@ BlacksmithDirectives.directive(
 					}
 				};
 				
-				$scope.$watch('zgeg', function() {
-					$scope.iconClass = flavors[iconFlavor][$scope.zgeg];
+				$scope.$watch('type', function() {
+					$scope.iconClass = flavors[iconFlavor][$scope.type];
 				});
 			},
 			template: '<span class="{{iconClass}}"></span>'

@@ -119,7 +119,7 @@ BlacksmithDirectives.directive(
 							});
 					};
 			},
-			template: '<button type="button" class="btn {{status.buttonstyle}} btn-xs" ng-click="open()"><icon zgeg="{{status.id}}" /></button>'
+			template: '<button type="button" class="btn {{status.buttonstyle}} btn-xs" ng-click="open()"><icon type="{{status.id}}" /></button>'
 		};
 	}
 );
