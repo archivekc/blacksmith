@@ -36,17 +36,17 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 								list: []
 							},
 						total: {
-								count: data.totalCount || 0,
+								count: data.totalCount || (0 + (data.failCount || 0) + (data.skipCount || 0) + (data.passCount || 0)),
 								list: []
 							}
 					};
 					project.tests.success = {
-						count: project.tests.total.count - project.tests.failed.count - project.tests.skipped.count,
+						count: data.passCount || project.tests.total.count - project.tests.failed.count - project.tests.skipped.count,
 						list: []
 					};
-
-					angular.forEach(data.childReports, function(report) {
-						angular.forEach(report.result.suites, function(suite) {
+					
+					var browseSuites = function(suites) {
+						angular.forEach(suites, function(suite) {
 							angular.forEach(suite.cases, function(cas) {
 								var v = {
 										className: cas.className,
@@ -61,8 +61,14 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 								}
 								project.tests.total.list.push(v);
 							})
-						})
+						});
+					}
+
+					angular.forEach(data.childReports, function(report) {
+						browseSuites(report.result.suites);
 					});
+					
+					browseSuites(data.suites);
 				})
 				.error(function() {
 					project.tests = {
@@ -100,6 +106,9 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 
 			$q.all([reportRequest, updateDateRequest])
 				.then(function () {
+					deferred.resolve(project)
+				},
+				function () {
 					deferred.resolve(project)
 				});
 
