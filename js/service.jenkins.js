@@ -7,8 +7,18 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 			jenkinsCache.removeAll();
 		});
 
+	var httpJenkins = function(url) {
+		return $http({
+				method: 'GET',
+				url: url,
+				headers: jenkinsHeaders,
+				withCredentials: true,
+				cache: jenkinsCache
+			});
+	};
+
 	return {
-		getLastCompletedBuild: function (jobName) {
+		getNonBuildingBuild: function (jobName) {
 			var deferred = $q.defer();
 
 			var reportRequest,
@@ -17,15 +27,30 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 			var project;
 			project = {};
 			project.name = jobName;
-			project.url = jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/testReport/';
 
-			reportRequest = $http({
-					method: 'GET',
-					url: jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/testReport/api/json',
-					headers: jenkinsHeaders,
-					withCredentials: true,
-					cache: jenkinsCache
-				}).success(function(data) {
+			var resolve = function () {
+				deferred.resolve(project)
+			};
+
+			httpJenkins(jenkinsUrl + 'job/' + jobName + '/lastBuild/api/json')
+				.then(function(response) {
+					if (!response.data.building) {
+						return response;
+					}
+					else {
+						return httpJenkins(jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/api/json');
+					}
+				}, resolve)
+				.then(function(response) {
+					project.timestamp = response.data.timestamp;
+					project.result = response.data.result;
+					project.url = jenkinsUrl + 'job/' + jobName + '/' + response.data.number + '/testReport/';
+
+					return httpJenkins(jenkinsUrl + 'job/' + jobName + '/' + response.data.number + '/testReport/api/json');
+				}, resolve)
+				.then(function(response) {
+					var data = response.data;
+
 					project.tests = {
 						failed: {
 								count: data.failCount || 0,
@@ -44,7 +69,7 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 						count: data.passCount || project.tests.total.count - project.tests.failed.count - project.tests.skipped.count,
 						list: []
 					};
-					
+
 					var browseSuites = function(suites) {
 						angular.forEach(suites, function(suite) {
 							angular.forEach(suite.cases, function(cas) {
@@ -67,10 +92,10 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 					angular.forEach(data.childReports, function(report) {
 						browseSuites(report.result.suites);
 					});
-					
+
 					browseSuites(data.suites);
-				})
-				.error(function() {
+				},
+				function() {
 					project.tests = {
 						failed: {
 								count: 0,
@@ -89,34 +114,9 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 								list: []
 							}
 					};
-				});
+				})
+				.finally(resolve);
 
-
-
-			updateDateRequest = $http({
-					method: 'GET',
-					url: jenkinsUrl + 'job/' + jobName + '/lastCompletedBuild/api/json',
-					headers: jenkinsHeaders,
-					withCredentials: true,
-					cache: jenkinsCache
-				}).success(function(data) {
-					project.timestamp = data.timestamp;
-				});
-
-
-			$q.all([reportRequest, updateDateRequest])
-				.then(function () {
-					deferred.resolve(project)
-				},
-				function () {
-					deferred.resolve(project)
-				});
-
-			return deferred.promise;
-		},
-		getLastCompletedBuildURL: function (jobName) {
-			var deferred = $q.defer();
-			deferred.resolve();
 			return deferred.promise;
 		}
 	}

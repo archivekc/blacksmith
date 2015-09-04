@@ -162,9 +162,12 @@ BlacksmithDirectives.directive(
 
 				var refreshProject = function () {
 					jenkins
-						.getLastCompletedBuild($scope.fullname)
+						.getNonBuildingBuild($scope.fullname)
 						.then(function (value) {
-							if(value.tests.failed.count > 0) {
+							if(value.result === "UNSTABLE" ||
+									value.result === "FAILURE" ||
+									value.result === "NOT_BUILT" ||
+									value.tests.failed.count > 0) {
 								value.status = statuses.FAILED;
 							} else if(value.tests.skipped.count > 0) {
 								value.status = statuses.HASSKIPPED;
