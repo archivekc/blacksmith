@@ -118,6 +118,21 @@ BlacksmithServices.factory('jenkins', function($http, $cacheFactory, $q, ticker,
 				.finally(resolve);
 
 			return deferred.promise;
+		},
+		isBuilding: function(jobName) {
+			var deferred = $q.defer();
+
+			updateDateRequest = $http({
+					method: 'GET',
+					url: jenkinsUrl + 'job/' + jobName + '/lastBuild/api/json',
+					headers: jenkinsHeaders,
+					withCredentials: true,
+					cache: jenkinsCache
+				}).success(function(data) {
+					deferred.resolve(data.building);
+				});
+
+			return deferred.promise;
 		}
 	}
 });

@@ -206,3 +206,57 @@ BlacksmithDirectives.directive(
 		};
 	}
 );
+
+BlacksmithDirectives.directive(
+	'jenkinsBuilding',
+	function() {
+		return {
+			restrict: 'E',
+			scope: {
+				fullname: '@',
+				displayname: '@'
+			},
+			controller: function($scope, $element, $modal, ticker, jenkins) {
+
+				var modalTemplate = '<div class="modal-header">' +
+		        		'<h4 class="modal-title">{{displayname}}</h4>' +
+		      		'</div>' +
+	      			'<div class="modal-body">' +
+	        			'<img class="img-responsive" src="./img/do-not-push.jpg" />'+
+							'</div>';
+
+				var oldStatus = false;
+				var modalInstance;
+
+				var refreshProject = function () {
+					jenkins
+						.isBuilding($scope.fullname)
+						.then(function(isBuilding) {
+							if(isBuilding != oldStatus) {
+								if(modalInstance) {
+									modalInstance.close();
+									modalInstance = undefined;
+								}
+
+								if(isBuilding) {
+									modalInstance = $modal.open({
+										scope: $scope,
+								    template: modalTemplate
+								  });
+								}
+							}
+
+							oldStatus = isBuilding;
+						});
+				};
+
+				ticker.register(function() { refreshProject(); });
+
+				refreshProject();
+			},
+			replace: true,
+			transclude: false,
+			template: ''
+		}
+	}
+);
